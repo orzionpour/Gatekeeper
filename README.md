@@ -1,8 +1,13 @@
-# Lightweight RBAC Authorization Service
+<p align="center">
+ <img src="./Gatekeeper_logo.png" height="300px"> 
+</p>
+
+# Gatekeeper <br>
+<i>**Lightweight RBAC Authorization Service**</i>
 
 A **simple, fast, self-hosted authorization service** that provides **Role-Based Access Control (RBAC)** for applications without reinventing permissions in every codebase.
 
-This project focuses on **developer experience**, **performance**, and **clarity** — not enterprise bloat.
+This project focuses on **developer experience**, **performance**, and **clarity** - not enterprise bloat.
 
 ---
 
