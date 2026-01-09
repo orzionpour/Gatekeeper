@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info:
+  title: Gatekeeper - Lightweight RBAC Authorization Service
+  description: A simple, fast, self-hosted authorization service for RBAC.
+  version: 0.1.0
+paths:
+  /v1/check:
+    post:
+      summary: Check if a user has permission to perform an action.
+      operationId: checkPermission
+      tags:
+        - Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckRequest'
+      responses:
+        '200':
+          description: Authorization decision
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckResponse'
+        '400':
+          description: Invalid input (e.g., missing fields)
+        '401':
+          description: Invalid or missing API Key
+
+components:
+  schemas:
+    CheckRequest:
+      type: object
+      required:
+        - subject
+        - action
+        - resource
+      properties:
+        subject:
+          type: string
+          description: The unique identifier of the user (from your JWT/OIDC).
+          example: "user_123"
+        action:
+          type: string
+          description: The operation being performed.
+          example: "invoice:read"
+        resource:
+          type: string
+          description: The entity type being accessed.
+          example: "invoice"
+        scope:
+          type: object
+          properties:
+            type:
+              type: string
+              example: "org"
+            id:
+              type: string
+              example: "org_456"
+          description: Optional context for the permission (e.g., organization or project ID).
+
+    CheckResponse:
+      type: object
+      required:
+        - allow
+        - reason
+      properties:
+        allow:
+          type: boolean
+          description: Whether the request is authorized.
+        reason:
+          type: string
+          description: A machine-readable reason for the decision.
+          example: "permission_granted"
+        matched_roles:
+          type: array
+          items:
+            type: string
+          description: List of roles that satisfied the permission check.
+          example: ["accountant", "admin"]
