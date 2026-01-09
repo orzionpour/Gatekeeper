@@ -125,7 +125,9 @@ Service will be available at:
 http://localhost:8080
 ```
 
-Make sure to have secretes/db_password.txt file holds the db password.
+> [!NOTE]
+> Make sure to have secrets/db_password.txt file holds the db password.
+
 ---
 
 ## Roadmap
