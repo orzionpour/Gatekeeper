@@ -6,25 +6,35 @@ services:
     container_name: gatekeeper_db
     restart: always
     environment:
-      - POSTGRES_USER=gatekeeper
-      - POSTGRES_DB=gatekeeper
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    secrets:
-      - db_password
     healthcheck:
-      test: ["CMD-SHELL", "pg-isready -U gatekeeper -d gatekeeper"]
-      interval: 1m30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 3s      
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+
+  migration:
+    image: flyway/flyway:10-alpine
+    container_name: gatekeeper_migration
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://db:5432/${DB_NAME}
+      - FLYWAY_USER=${DB_USER}
+      - FLYWAY_PASSWORD=${DB_PASSWORD}
+      - FLYWAY_SCHEMAS=gatekeeper
+      - FLYWAY_LOCATIONS=filesystem:/flyway/sql
+    volumes:
+      - ./migrations:/flyway/sql
+    command: -connectRetries=10 migrate
 
 volumes:
   postgres_data:
-
-secrets:
-  db_password:
-    file: ./secrets/db_password.txt
